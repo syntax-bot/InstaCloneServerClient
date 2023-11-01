@@ -3,29 +3,57 @@ import fs from "node:fs";
 import { v2 as cloudinary } from "cloudinary";
 import { User } from "../model/User.js";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
+// cloudinary.config({
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY,
+//   api_secret: process.env.API_SECRET,
+// });
 
-export const createPost = (req, res) => {
-  cloudinary.uploader
-    .upload(req.file.path, {
-      public_id: `${req.body.userId}${Date.now()}`,
-      folder: "postsImage",
-    })
-    .then((result) => {
-      fs.unlinkSync(req.file.path);
-      const newPost = new Post({
-        image: result.url,
-        userId: req.body.userId,
-        caption: req.body.caption,
-        title: req.body.title,
-        time: new Date(),
-      });
-      return newPost.save();
-    })
+// export const createPost = (req, res) => {
+//   console.log("*", req);
+//   cloudinary.uploader
+//     .upload(req.file.path, {
+//       public_id: `${req.body.userId}${Date.now()}`,
+//       folder: "postsImage",
+//     })
+//     .then((result) => {
+//       fs.unlinkSync(req.file.path);
+//       const newPost = new Post({
+//         image: result.url,
+//         userId: req.body.userId,
+//         caption: req.body.caption,
+//         title: req.body.title,
+//         time: new Date(),
+//       });
+//       return newPost.save();
+//     })
+//     .then((doc) => {
+//       if (doc && doc._id) {
+//         User.findOneAndUpdate(
+//           { _id: new Types.ObjectId(req.body.userId) },
+//           { $push: { posts: doc._id } }
+//         )
+//           .then((doc) => {})
+//           .catch((err) => {});
+//       }
+//       res.status(201).json(doc);
+//     })
+//     .catch((err) => {
+//       res.status(401).json(err);
+//     });
+// };
+
+export const createPost= (req, res) => {
+  console.log(req.body);
+  const newPost = new Post({
+    image: req.body.image,
+    userId: req.body.userId,
+    caption: req.body.caption,
+    title: req.body.title,
+    time: new Date(),
+  });
+  newPost
+    .save()
     .then((doc) => {
       if (doc && doc._id) {
         User.findOneAndUpdate(
@@ -38,6 +66,7 @@ export const createPost = (req, res) => {
       res.status(201).json(doc);
     })
     .catch((err) => {
+      console.log(err);
       res.status(401).json(err);
     });
 };

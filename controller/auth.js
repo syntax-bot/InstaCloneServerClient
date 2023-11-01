@@ -7,7 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { User } from "../model/User.js";
 
-
 const privateKey = fs.readFileSync(
   path.resolve(__dirname, "../jwtRS256.key"),
   "utf-8"
@@ -25,7 +24,11 @@ export const createUser = (req, res) => {
       res.status(201).json(doc);
     })
     .catch((err) => {
-      res.status(401).json(err);
+      if (err.name === "MongoServerError" && err.code === 11000) {
+        res.status(409).json(err.keyPattern);
+      } else {
+        res.status(409).json(err);
+      }
     });
 };
 

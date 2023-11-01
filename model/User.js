@@ -6,14 +6,14 @@ const userSchema = new Schema({
   lastName: { type: String },
   email: {
     type: String,
-    unique: true,
+    unique: [true, "User With this Email Already Exist"],
     validate: {
       validator: function (v) {
         return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
       },
       message: (props) => `${props.value} is not a valid email!`,
     },
-    required: true,
+    required: [true, "User Required"],
   },
 
   userName: { type: String, unique: true, required: true },
@@ -29,7 +29,7 @@ const userSchema = new Schema({
   friends: [{ type: String }],
   bio: {
     type: String,
-    default: "Write something about you. /n So,people can get to know you.",
+    default: "Write something about you./nSo,people can get to know you.",
   },
   RecentSearch: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
